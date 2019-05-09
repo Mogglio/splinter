@@ -6,24 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DashboardController extends Controller
+class DockerBuildController extends Controller
 {
     /**
-     * @Route("/dashboard", name="dashboard")
+     * @Route("/dockerbuild", name="dockerbuild")
      */
     public function indexAction(Request $request)
     {
-        return $this->render('default/dashboard.html.twig', [
+        return $this->render('default/dockerbuild.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
         ]);
     }
-
-    /**
-     * @Route("/add", name="add")
-     */
-    public function addAction(Request $request)
-    {
-
-    }
-
 }
