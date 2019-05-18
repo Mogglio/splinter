@@ -17,4 +17,11 @@ class DockerBuildController extends Controller
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
         ]);
     }
+
+    public function fetchImagesFromDockerHub()
+    {
+        $url = 
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+    }
 }
