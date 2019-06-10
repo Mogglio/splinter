@@ -7,10 +7,15 @@
             <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
             <link rel="stylesheet" href="{{ asset('css/knacss.css') }}">
             <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/jquery.tagsinput.css') }}">
         {% endblock %}
     </head>
     <body>
         {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset('js/jquery.min.js') }}"></script>
+            <script src="{{ asset('js/global.js') }}"></script>
+            <script src="{{ asset('js/jquery.tagsinput.js') }}"></script>
+        {% endblock %}
     </body>
 </html>

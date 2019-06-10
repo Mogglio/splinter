@@ -1,3 +1,20 @@
 body {
     padding: 50px 150px;
+    background-color: #efefef;
+}
+
+.green-btn {
+    margin: 5px;
+}
+
+#os_version {
+    margin-right: 4px;
+}
+
+#generate_docker_file {
+    visibility: hidden;
+}
+
+#tags_tagsinput{
+    margin: 15px 0;
 }
