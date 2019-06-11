@@ -5,18 +5,20 @@
 <h1>Créez votre VM personalisée</h1>
 
 <form id="dockerBuildForm" action="{{ path('generate') }}" method="post">
-    <div>
-        <label for="image_os">
-            <select id="image" name="image_os">
-                <option value="centos">Cent OS</option>
-                <option value="debian">Debian</option>
-                <option value="ubuntu">Ubuntu</option>
-            </select>
-        </label>
-        <input type="button" id="validate_os" class="green-btn btn--success" value="Next" />
-    </div>
+    <ul class="is-unstyled">
+        <li>
+            <input type="radio" class="radio" name="radio" id="r1" checked="checked">
+            <label for="r1">Debian 9</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="radio" id="r2">
+            <label for="r2">CentOS 7</label>
+        </li>
+    </ul>
+
     <div id="os_versions_block"></div>
 
+    <label for="tags">Packages pré-installés :</label>
     <input name="tags" id="tags" value="foo,bar,baz" />
 
     <div class="bottom_generate">

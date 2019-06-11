@@ -38,13 +38,6 @@ class Server
     /**
      * @var string
      *
-     * @ORM\Column(name="version_os", type="string", length=256, nullable=true)
-     */
-    private $versionOs;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="packages", type="text", length=65535, nullable=true)
      */
     private $packages;
@@ -97,29 +90,6 @@ class Server
     public function getBaseOs()
     {
         return $this->baseOs;
-    }
-
-    /**
-     * Set versionOs
-     *
-     * @param $versionOs
-     * @return Server
-     */
-    public function setVersionOs($versionOs)
-    {
-        $this->versionOs = $versionOs;
-
-        return $this;
-    }
-
-    /**
-     * Get versionOs
-     *
-     * @return string
-     */
-    public function getVersionOs()
-    {
-        return $this->versionOs;
     }
 
     /**

@@ -2,19 +2,40 @@ body {
     padding: 50px 150px;
     background-color: #efefef;
 }
-
 .green-btn {
     margin: 5px;
 }
-
 #os_version {
     margin-right: 4px;
+    min-width: 300px;
 }
-
 #generate_docker_file {
     visibility: hidden;
 }
-
 #tags_tagsinput{
     margin: 15px 0;
+}
+.login-block {
+    margin-bottom: 5px;
+}
+.login-content {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: auto;
+}
+.login-content h1 {
+    margin: auto;
+    width: 240px;
+}
+.login-field {
+    width: 100%;
+}
+.login-submit {
+    margin: auto;
+    width: 112px;
+}
+.login-submit input {
+    width: 100%;
 }

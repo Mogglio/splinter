@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends Controller
 {
     /**
-     * @Route("/dashboard", name="dashboard")
+     * @Route("/", name="dashboard")
      */
     public function indexAction(Request $request)
     {
@@ -17,13 +17,4 @@ class DashboardController extends Controller
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
         ]);
     }
-
-    /**
-     * @Route("/add", name="add")
-     */
-    public function addAction(Request $request)
-    {
-
-    }
-
 }
