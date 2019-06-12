@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <ul class="vm-container">
+        {% for vm in vms %}
+            <li class="nb-vm">{{ loop.index }}</li>
+            <li class="vm-name">{{ vm.name }}</li>
+            <li class="os-name">{{ vm.os }}</li>
+        {% endfor %}
+    </ul>
+
+{%  endblock %}
