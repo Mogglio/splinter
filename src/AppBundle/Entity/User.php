@@ -19,6 +19,18 @@ class User extends BaseUser
      */
     protected $id;
 
+    protected $username;
+
+    /**
+     * Get username
+     *
+     * @return integer
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
     public function __construct()
     {
         parent::__construct();

@@ -7,22 +7,46 @@
 <form id="dockerBuildForm" action="{{ path('generate') }}" method="post">
     <ul class="is-unstyled">
         <li>
-            <input type="radio" class="radio" name="radio" id="r1" checked="checked">
+            <input type="radio" class="radio" name="image_os" id="r1" checked="checked" value="debian-9">
             <label for="r1">Debian 9</label>
         </li>
         <li>
-            <input type="radio" class="radio" name="radio" id="r2">
-            <label for="r2">CentOS 7</label>
+            <input type="radio" class="radio" name="image_os" id="r2" value="centos-6">
+            <label for="r2">CentOS 6</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="image_os" id="r3" value="centos-7">
+            <label for="r3">CentOS 7</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="image_os" id="r4" value="ubuntu-1404-lts">
+            <label for="r4">Ubuntu 14.04 lts</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="image_os" id="r5" value="ubuntu-1604-lts">
+            <label for="r5">Ubuntu 16.04 lts</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="image_os" id="r6" value="ubuntu-1804-lts">
+            <label for="r6">Ubuntu 18.04 lts</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="image_os" id="r7" value="ubuntu-1810">
+            <label for="r7">Ubuntu 18.10</label>
+        </li>
+        <li>
+            <input type="radio" class="radio" name="image_os" id="r8" value="ubuntu-1904">
+            <label for="r8">Ubuntu 19.04</label>
         </li>
     </ul>
 
     <div id="os_versions_block"></div>
 
-    <label for="tags">Packages pré-installés :</label>
-    <input name="tags" id="tags" value="foo,bar,baz" />
+    <label for="tags"><strong>Packages pré-installés :</strong></label>
+    <input name="tags" id="tags" value="nano" />
 
     <div class="bottom_generate">
-        <input type="submit" id="generate_docker_file" class="btn--success" disabled value="Generate" />
+        <input type="submit" id="generate_docker_file" class="btn--success" value="Generate" />
     </div>
 </form>
 

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Server;
+use AppBundle\Entity\Configuration;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,62 +26,68 @@ class ImageBuilderController extends Controller
         ]);
     }
 
-    /**
-     * @Route("/confirm", name="confirm")
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function confirmAction(Request $request)
-    {
-        return $this->render('default/confirm.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
-    }
+//    /**
+//     * @Route("/confirm", name="confirm")
+//     * @param Request $request
+//     * @return \Symfony\Component\HttpFoundation\Response
+//     */
+//    public function confirmAction(Request $request)
+//    {
+//        return $this->render('default/confirm.html.twig', [
+//            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+//        ]);
+//    }
 
     /**
      * @Route("/generate", name="generate")
      */
     public function generateAction(Request $request) {
 
+        $result_infos = array();
         if ($request->getMethod() == Request::METHOD_POST) {
             $image_os = $request->request->get('image_os');
 
-            $dockerFileGenerated = $this->generateScriptFile($image_os);
+            $family_name = $this->getDoctrine()
+                ->getRepository(Configuration::class)
+                ->getConfigurationByBaseOs($image_os);
+
+            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os);
         }
 
-        return $this->redirectToRoute('confirm');
+        return $this->render('default/confirm.html.twig', [
+            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+            'infos' => $result_infos
+        ]);
     }
 
-    public function generateScriptFile($image_os) {
+    public function generateScriptFile($image_os, $family_name) {
+        $result_infos = array();
         $user = $this->getUser();
         $id_server = $this->createNewImageForUser($image_os);
-        $tmp_user_dir = 'sh_'. $user->getId() .'_'.$id_server;
+        $tmp_user_dir = 'sh-'. $user->getId() .'-'.$id_server;
 
         mkdir($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir, 0777);
 
-        $content = '
-        #! /bin/bash
-        sudo su -
-        
-        apt-get update && apt-get install -y openssh-server sudo nano
-        
-        adduser --quiet --disabled-password --shell /bin/bash --home /home/'.$user->username.' --gecos "'.$user->username.'" '.$user->username.'
-        echo "'.$user->username.':insset" | chpasswd
-        adduser '.$user->username.' sudo
-        
-        sed -n \'H;${x;s/\PasswordAuthentication no/PasswordAuthentication yes/;p;}\' /etc/ssh/sshd_config > tmp_sshd_config
-        cat tmp_sshd_config > /etc/ssh/sshd_config
-        rm tmp_sshd_config
-        /etc/init.d/ssh restart';
+        $content = $this->getContentForScript($user, $family_name);
 
-        // gcloud compute instances create name-vm --image-family debian-9 --image-project debian-cloud --metadata-from-file startup-script=script.sh
 
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
 
-        fwrite ($handle, $content);
+        fwrite($handle, $content);
 
-        exit;
-        return true;
+        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
+
+        $output_string = explode(' ',$output[1]);
+
+        foreach ($output_string as $vm_info) {
+            if ($vm_info != '') {
+                $result_infos[] = $vm_info;
+            }
+        }
+        dump($output);
+        dump($result_infos);
+        dump($return_var);
+        return $result_infos;
     }
 
     public function createNewImageForUser($image_os)
@@ -94,5 +101,41 @@ class ImageBuilderController extends Controller
         $entityManager->flush();
 
         return $server->getIdServer();
+    }
+
+    public function getContentForScript($user, $family_name)
+    {
+        if ($family_name != 'centos-cloud') {
+            $content = '
+                #! /bin/bash
+                sudo su -
+                
+                apt-get update && apt-get install -y openssh-server sudo
+                
+                adduser --quiet --disabled-password --shell /bin/bash --home /home/'.$user->getUsername().' --gecos "'.$user->getUsername().'" '.$user->getUsername().'
+                echo "'.$user->getUsername().':insset" | chpasswd
+                adduser '.$user->getUsername().' sudo
+                
+                sed -n \'H;${x;s/\PasswordAuthentication no/PasswordAuthentication yes/;p;}\' /etc/ssh/sshd_config > tmp_sshd_config
+                cat tmp_sshd_config > /etc/ssh/sshd_config
+                rm tmp_sshd_config
+                /etc/init.d/ssh restart';
+        } else {
+            $content = '
+                #! /bin/bash
+                sudo su -
+                
+                yum update && yum install -y openssh-server
+                
+                adduser --shell /bin/bash --home /home/'.$user->getUsername().' '.$user->getUsername().'
+                echo "'.$user->getUsername().':insset" | chpasswd
+                usermod -aG wheel '.$user->getUsername().'
+                
+                sed -n \'H;${x;s/\#PasswordAuthentication yes/PasswordAuthentication yes/;p;}\' /etc/ssh/sshd_config > tmp_sshd_config
+                cat tmp_sshd_config > /etc/ssh/sshd_config
+                rm -f tmp_sshd_config
+                service sshd restart';
+        }
+        return $content;
     }
 }

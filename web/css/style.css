@@ -9,9 +9,6 @@ body {
     margin-right: 4px;
     min-width: 300px;
 }
-#generate_docker_file {
-    visibility: hidden;
-}
 #tags_tagsinput{
     margin: 15px 0;
 }
