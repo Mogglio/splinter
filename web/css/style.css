@@ -66,3 +66,21 @@ body {
     max-width: 300px;
     margin: 0 auto 1.5rem auto;
 }
+
+.register-confirmed {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+}
+
+.login-already-log {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+}
