@@ -36,3 +36,33 @@ body {
 .login-submit input {
     width: 100%;
 }
+
+.register-content {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: auto;
+}
+
+.register-content input {
+    width: 100%;
+}
+
+.register-content label {
+    margin-top: .5rem;
+}
+
+.register-content input.btn--primary {
+    background-color: #333;
+    margin-top: 1.5rem;
+}
+
+.log-state {
+    text-align: center;
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: 0 auto 1.5rem auto;
+}
