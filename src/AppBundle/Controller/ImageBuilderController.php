@@ -153,9 +153,9 @@ class ImageBuilderController extends Controller
 
         $mailer = new Swift_Mailer($transport);
 
-        $message = (new Swift_Message('Wonderful Subject'))
+        $message = (new Swift_Message('Votre machine est disponible'))
             ->setFrom(['splintermastercloud@gmail.com' => 'Splinter'])
-            ->setTo(['mathieudeghilage@gmail.com'])
+            ->setTo([$user->getEmail()])
             ->setBody('Votre machine est disponible : 
         IP serveur : '.$result_infos[4].'
         Login : '.$user->getUsername().'
