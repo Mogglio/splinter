@@ -7,11 +7,12 @@
     {% endif %}
 
     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-        {#{{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |#}
-        <h2>Vous êtes déjà connecté.</h2>
-        <a href="{{ path('fos_user_security_logout') }}">
-            Logout
-        </a>
+{#        {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |#}
+        <div class="login-already-log">
+            <h2>Vous êtes déjà connecté.</h2>
+            <a href="{{ path('fos_user_security_logout') }}">Logout</a>
+        </div>
+
     {% else %}
         <div class="login-content">
             <h1>Connectez-vous</h1>
