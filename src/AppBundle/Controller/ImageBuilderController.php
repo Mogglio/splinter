@@ -29,18 +29,6 @@ class ImageBuilderController extends Controller
         ]);
     }
 
-//    /**
-//     * @Route("/confirm", name="confirm")
-//     * @param Request $request
-//     * @return \Symfony\Component\HttpFoundation\Response
-//     */
-//    public function confirmAction(Request $request)
-//    {
-//        return $this->render('default/confirm.html.twig', [
-//            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-//        ]);
-//    }
-
     /**
      * @Route("/generate", name="generate")
      */
@@ -68,19 +56,13 @@ class ImageBuilderController extends Controller
         $user = $this->getUser();
         $mdp = $this->generatepwd();
         $id_server = $this->createNewImageForUser($image_os);
-        $tmp_user_dir = 'sh-'. $user->getId() .'-'.$id_server;
+        $tmp_user_dir = $image_os.'-'. $user->getId() .'-'.$id_server;
 
         mkdir($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir, 0777);
-
         $content = $this->getContentForScript($user, $family_name, $mdp);
-
-
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
-
         fwrite($handle, $content);
-
         exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
-
         $output_string = explode(' ',$output[1]);
 
         foreach ($output_string as $vm_info) {
@@ -164,9 +146,6 @@ class ImageBuilderController extends Controller
 
     private function sendMailForUser($result_infos, $user, $mdp)
     {
-
-//        mail('mathieudeghilage@gmail.com', 'test', 'salut');
-
         $transport = (new Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))
             ->setUsername('splintermastercloud@gmail.com')
             ->setPassword('O1*e#3nDfAx5^4AedpSw6MD')
@@ -177,10 +156,13 @@ class ImageBuilderController extends Controller
         $message = (new Swift_Message('Wonderful Subject'))
             ->setFrom(['splintermastercloud@gmail.com' => 'Splinter'])
             ->setTo(['mathieudeghilage@gmail.com'])
-            ->setBody('Here is the message itself')
-        ;
+            ->setBody('Votre machine est disponible : 
+        IP serveur : '.$result_infos[4].'
+        Login : '.$user->getUsername().'
+        mot de passe : '.$mdp.'
+        ');
 
-        $result = $mailer->send($message);
+        $mailer->send($message);
 
         return new Response();
     }
