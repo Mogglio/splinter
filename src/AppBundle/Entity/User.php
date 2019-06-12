@@ -21,6 +21,8 @@ class User extends BaseUser
 
     protected $username;
 
+    protected $email;
+
     /**
      * Get username
      *
@@ -29,6 +31,16 @@ class User extends BaseUser
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * Get email
+     *
+     * @return integer
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     public function __construct()

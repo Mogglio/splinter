@@ -4,6 +4,9 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Server;
 use AppBundle\Entity\Configuration;
+use Swift_Mailer;
+use Swift_Message;
+use Swift_SmtpTransport;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -63,12 +66,13 @@ class ImageBuilderController extends Controller
     public function generateScriptFile($image_os, $family_name) {
         $result_infos = array();
         $user = $this->getUser();
+        $mdp = $this->generatepwd();
         $id_server = $this->createNewImageForUser($image_os);
         $tmp_user_dir = 'sh-'. $user->getId() .'-'.$id_server;
 
         mkdir($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir, 0777);
 
-        $content = $this->getContentForScript($user, $family_name);
+        $content = $this->getContentForScript($user, $family_name, $mdp);
 
 
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
@@ -84,9 +88,13 @@ class ImageBuilderController extends Controller
                 $result_infos[] = $vm_info;
             }
         }
+
+        $this->sendMailForUser($result_infos, $user, $mdp);
+
         dump($output);
         dump($result_infos);
         dump($return_var);
+        exit;
         return $result_infos;
     }
 
@@ -103,7 +111,7 @@ class ImageBuilderController extends Controller
         return $server->getIdServer();
     }
 
-    public function getContentForScript($user, $family_name)
+    public function getContentForScript($user, $family_name, $mdp)
     {
         if ($family_name != 'centos-cloud') {
             $content = '
@@ -113,7 +121,7 @@ class ImageBuilderController extends Controller
                 apt-get update && apt-get install -y openssh-server sudo
                 
                 adduser --quiet --disabled-password --shell /bin/bash --home /home/'.$user->getUsername().' --gecos "'.$user->getUsername().'" '.$user->getUsername().'
-                echo "'.$user->getUsername().':insset" | chpasswd
+                echo "'.$user->getUsername().':'.$mdp.'" | chpasswd
                 adduser '.$user->getUsername().' sudo
                 
                 sed -n \'H;${x;s/\PasswordAuthentication no/PasswordAuthentication yes/;p;}\' /etc/ssh/sshd_config > tmp_sshd_config
@@ -128,7 +136,7 @@ class ImageBuilderController extends Controller
                 yum update && yum install -y openssh-server
                 
                 adduser --shell /bin/bash --home /home/'.$user->getUsername().' '.$user->getUsername().'
-                echo "'.$user->getUsername().':insset" | chpasswd
+                echo "'.$user->getUsername().':'.$mdp.'" | chpasswd
                 usermod -aG wheel '.$user->getUsername().'
                 
                 sed -n \'H;${x;s/\#PasswordAuthentication yes/PasswordAuthentication yes/;p;}\' /etc/ssh/sshd_config > tmp_sshd_config
@@ -137,5 +145,43 @@ class ImageBuilderController extends Controller
                 service sshd restart';
         }
         return $content;
+    }
+
+    private function generatepwd(){
+        $characts= 'abcdefghijklmnopqrstuvwxyz';
+        $characts.= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characts.= '1234567890';
+        $code_aleatoire= '';
+        $modele = "[0-9]";
+        for ($i=0;$i < 8;$i++){
+            $code_aleatoire .= substr($characts,rand()%(strlen($characts)),1); }
+        if ($code_aleatoire= ucfirst ($code_aleatoire ) AND strpbrk($code_aleatoire, $modele)){
+            return $code_aleatoire;
+        } else {
+            $this->generatepwd();
+        }
+    }
+
+    private function sendMailForUser($result_infos, $user, $mdp)
+    {
+
+//        mail('mathieudeghilage@gmail.com', 'test', 'salut');
+
+        $transport = (new Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))
+            ->setUsername('splintermastercloud@gmail.com')
+            ->setPassword('O1*e#3nDfAx5^4AedpSw6MD')
+        ;
+
+        $mailer = new Swift_Mailer($transport);
+
+        $message = (new Swift_Message('Wonderful Subject'))
+            ->setFrom(['splintermastercloud@gmail.com' => 'Splinter'])
+            ->setTo(['mathieudeghilage@gmail.com'])
+            ->setBody('Here is the message itself')
+        ;
+
+        $result = $mailer->send($message);
+
+        return new Response();
     }
 }
