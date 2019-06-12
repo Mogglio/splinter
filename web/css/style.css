@@ -84,3 +84,21 @@ body {
     margin: auto;
     text-align: center;
 }
+
+.dashboard-container {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+}
+
+.dashboard-login {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 300px;
+    margin: 0 auto 1.5rem auto;
+    text-align: center;
+}
