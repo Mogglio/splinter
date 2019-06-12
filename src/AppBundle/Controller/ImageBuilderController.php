@@ -45,9 +45,16 @@ class ImageBuilderController extends Controller
             $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os);
         }
 
+        if (substr_count($request->getHttpHost(), 'localhost') > 0) {
+            $base_url = 'localhost';
+        } else {
+            $base_url = $request->getHttpHost();
+        }
+
         return $this->render('default/confirm.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-            'infos' => $result_infos
+            'infos' => $result_infos,
+            'base_url' => $base_url
         ]);
     }
 
@@ -57,7 +64,6 @@ class ImageBuilderController extends Controller
         $mdp = $this->generatepwd();
         $id_server = $this->createNewImageForUser($image_os);
         $tmp_user_dir = $image_os.'-'. $user->getId() .'-'.$id_server;
-
         mkdir($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir, 0777);
         $content = $this->getContentForScript($user, $family_name, $mdp);
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
@@ -73,10 +79,10 @@ class ImageBuilderController extends Controller
 
         $this->sendMailForUser($result_infos, $user, $mdp);
 
-        dump($output);
-        dump($result_infos);
-        dump($return_var);
-        exit;
+//        dump($output);
+//        dump($result_infos);
+//        dump($return_var);
+//        exit;
         return $result_infos;
     }
 
@@ -136,12 +142,10 @@ class ImageBuilderController extends Controller
         $code_aleatoire= '';
         $modele = "[0-9]";
         for ($i=0;$i < 8;$i++){
-            $code_aleatoire .= substr($characts,rand()%(strlen($characts)),1); }
-        if ($code_aleatoire= ucfirst ($code_aleatoire ) AND strpbrk($code_aleatoire, $modele)){
-            return $code_aleatoire;
-        } else {
-            $this->generatepwd();
+            $code_aleatoire .= substr($characts,rand()%(strlen($characts)),1);
         }
+
+        return $code_aleatoire;
     }
 
     private function sendMailForUser($result_infos, $user, $mdp)

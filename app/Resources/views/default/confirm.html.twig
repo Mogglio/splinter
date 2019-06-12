@@ -8,5 +8,5 @@
     <p>La connection à votre machine se fera en SSH via l'IP {{ infos.4 }}</p>
     <br />
     <p>Suivez ce lien pour une connection sur navigateur :</p>
-    <a href="http://localhost:2222/ssh/host/{{ infos.4 }}"></a>
+    <a href="http://{{ base_url }}:2222/ssh/host/{{ infos.4 }}">http://{{ base_url }}:2222/ssh/host/{{ infos.4 }}</a>
 {% endblock %}
