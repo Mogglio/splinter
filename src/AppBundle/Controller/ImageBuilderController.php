@@ -38,11 +38,13 @@ class ImageBuilderController extends Controller
         if ($request->getMethod() == Request::METHOD_POST) {
             $image_os = $request->request->get('image_os');
 
+            $machineType = $request->request->get('type-machine');
+
             $family_name = $this->getDoctrine()
                 ->getRepository(Configuration::class)
                 ->getConfigurationByBaseOs($image_os);
 
-            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os);
+            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os, $machineType);
         }
 
         if (substr_count($request->getHttpHost(), 'localhost') > 0) {
@@ -58,7 +60,7 @@ class ImageBuilderController extends Controller
         ]);
     }
 
-    public function generateScriptFile($image_os, $family_name) {
+    public function generateScriptFile($image_os, $family_name, $machine_type) {
         $result_infos = array();
         $user = $this->getUser();
         $mdp = $this->generatepwd();
@@ -68,7 +70,7 @@ class ImageBuilderController extends Controller
         $content = $this->getContentForScript($user, $family_name, $mdp);
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
         fwrite($handle, $content);
-        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
+        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type .' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
         $output_string = explode(' ',$output[1]);
 
         foreach ($output_string as $vm_info) {

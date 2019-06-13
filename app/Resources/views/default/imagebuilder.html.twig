@@ -6,6 +6,9 @@
     <h1>Créez votre VM personalisée</h1>
 
     <form id="dockerBuildForm" action="{{ path('generate') }}" method="post">
+
+        <h3>Système d'exploitation</h3>
+
         <ul class="is-unstyled">
             <li>
                 <input type="radio" class="radio" name="image_os" id="r1" checked="checked" value="debian-9">
@@ -40,6 +43,25 @@
                 <label for="r8">Ubuntu 19.04</label>
             </li>
         </ul>
+
+        <h3>Type de machine</h3>
+
+        <label>
+            <select name="type-machine" id="type-machine-select">
+                <option value="f1-micro">f1-micro</option>
+                <option value="g1-small">g1-small</option>
+                <option value="n1-standard-1">n1-standard-1</option>
+                <option value="n1-standard-2">n1-standard-2</option>
+                <option value="n1-standard-4">n1-standard-4</option>
+                <option value="n1-standard-8">n1-standard-8</option>
+                <option value="n1-highmem-2">n1-highmem-2</option>
+                <option value="n1-highmem-4">n1-highmem-4</option>
+                <option value="n1-highmem-8">n1-highmem-8</option>
+                <option value="n1-highcpu-2">n1-highcpu-2</option>
+                <option value="n1-highcpu-4">n1-highcpu-4</option>
+                <option value="n1-highcpu-8">n1-highcpu-8</option>
+            </select>
+        </label>
 
         <div id="os_versions_block"></div>
 
