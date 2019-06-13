@@ -21,9 +21,7 @@ class HistoryController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $userData = $this->getUser();
         $vmArray = array();
-        $vmObj = new \stdClass();
 
         $servers = $this->getDoctrine()
             ->getRepository(Server::class)
@@ -31,21 +29,42 @@ class HistoryController extends Controller
 
         foreach ($servers as $server) {
 
-//            array_push($vmArray, $user->getUsername() .'-'. $server->getBaseOs() .'-'. $user->getId() .'-'.$server->getIdServer());
-//            array_push($vmArray, $server->getBaseOs());
-
             $formatArray = array(
                 "name" => $user->getUsername() .'-'. $server->getBaseOs() .'-'. $user->getId() .'-'.$server->getIdServer(),
-                "os" => $server->getBaseOs()
+                "os" => $server->getBaseOs(),
+                "idServer" => $server->getIdServer()
             );
 
             array_push($vmArray, $formatArray);
         }
 
-        dump($vmArray);
-
         return $this->render('default/history.html.twig', [
             'vms' => $vmArray
         ]);
     }
+
+    /**
+     * @Route("/history/ajax", name="history_ajax")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function displayAjax(Request $request)
+    {
+        if ($request->request->get('vmName')) {
+
+            $vmName = $request->request->get('vmName');
+
+            exec('gcloud compute instances delete --quiet '. $vmName);
+
+            $em = $this->getDoctrine()->getEntityManager();
+            $entity = $em->getRepository(Server::class)->find($request->request->get('idServer'));
+            $em->remove($entity);
+            $em->flush();
+
+            return new JsonResponse("VM destroy", 200);
+
+        } else
+            return new JsonResponse("VM name not found", 404);
+    }
+
 }

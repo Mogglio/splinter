@@ -118,3 +118,36 @@ body {
 .imagebuilder-content .bottom_generate {
     text-align: center;
 }
+
+.history-container {
+    padding: 10px;
+    background-color: white;
+    border: solid 1px lightgray;
+    max-width: 900px;
+    margin: auto;
+}
+
+.history-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.history-container ul.vm-container {
+    list-style: none;
+    display: flex;
+    padding-left: 30px;
+    border: 1px solid lightgray;
+}
+
+.history-container ul.vm-container li {
+    margin: auto;
+}
+
+.history-container ul.vm-container li.nb-vm {
+    margin: 5px;
+}
+
+.history-container ul.vm-container button {
+    border: 1px solid #d9534f;
+}

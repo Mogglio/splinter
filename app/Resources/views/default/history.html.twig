@@ -1,13 +1,21 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-    <ul class="vm-container">
+    <div class="history-container">
+        <h1>VM actives</h1>
         {% for vm in vms %}
-            <li class="nb-vm">{{ loop.index }}</li>
-            <li class="vm-name">{{ vm.name }}</li>
-            <li class="os-name">{{ vm.os }}</li>
+            <ul class="vm-container">
+                <li class="nb-vm">{{ loop.index }}</li>
+                <li class="vm-name">{{ vm.name }}</li>
+                <li class="os-name">{{ vm.os }}</li>
+                <button class="btn--danger">Delete</button>
+                <li class="id-server" style="display: none">{{ vm.idServer }}</li>
+            </ul>
         {% endfor %}
-    </ul>
+    </div>
+
+    <script>
+        var historyAjaxRouteName = "{{ path('history_ajax')|escape('js') }}";
+    </script>
 
 {%  endblock %}
