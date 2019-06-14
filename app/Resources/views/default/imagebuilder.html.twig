@@ -7,9 +7,9 @@
 
     <form id="dockerBuildForm" action="{{ path('generate') }}" method="post">
 
-        <h3>Système d'exploitation</h3>
+        <h3>Système d'exploitation :</h3>
 
-        <ul class="is-unstyled">
+        <ul class="machine_config is-unstyled">
             <li>
                 <input type="radio" class="radio" name="image_os" id="r1" checked="checked" value="debian-9">
                 <label for="r1">Debian 9</label>
@@ -44,9 +44,10 @@
             </li>
         </ul>
 
-        <h3>Type de machine</h3>
+        <h3>Type de machine :</h3>
 
-        <label>
+        <div class="machine_config">
+            <label for="type-machine-select"></label>
             <select name="type-machine" id="type-machine-select">
                 <option value="f1-micro">f1-micro</option>
                 <option value="g1-small">g1-small</option>
@@ -61,12 +62,92 @@
                 <option value="n1-highcpu-4">n1-highcpu-4</option>
                 <option value="n1-highcpu-8">n1-highcpu-8</option>
             </select>
-        </label>
+        </div>
 
-        <div id="os_versions_block"></div>
 
-        <label for="tags"><strong>Packages pré-installés :</strong></label>
-        <input name="tags" id="tags" value="nano" />
+        <h3>Packages pré-installés sur votre machine :</h3>
+        <section class="grid-4">
+            <div>
+                <ul class="machine_config is-unstyled">
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c1" checked="checked" value="nano">
+                        <label for="c1">nano</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c2" value="htop">
+                        <label for="c2">htop</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c3" value="apache">
+                        <label for="c3">apache</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c4" value="nginx">
+                        <label for="c4">nginx</label>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <ul class="machine_config is-unstyled">
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c1" value="php">
+                        <label for="c1">php</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c2" value="python">
+                        <label for="c2">python</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c3" value="ruby">
+                        <label for="c3">ruby</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c4" value="gem">
+                        <label for="c4">gem</label>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <ul class="machine_config is-unstyled">
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c1" value="yarn">
+                        <label for="c1">yarn</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c2" value="mysql">
+                        <label for="c2">mysql</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c3" value="npm">
+                        <label for="c3">npm</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c4" value="nodejs">
+                        <label for="c4">nodejs</label>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <ul class="machine_config is-unstyled">
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c1" value="netstat">
+                        <label for="c1">netstat</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c2" value="curl">
+                        <label for="c2">curl</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c3" value="git">
+                        <label for="c3">git</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="packages[]" class="checkbox" id="c4" value="zip">
+                        <label for="c4">zip</label>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
         <div class="bottom_generate">
             <input type="submit" id="generate_docker_file" class="btn--success" value="Generate" />

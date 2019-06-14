@@ -151,3 +151,7 @@ body {
 .history-container ul.vm-container button {
     border: 1px solid #d9534f;
 }
+
+.machine_config {
+    padding: 25px !important;
+}

@@ -40,11 +40,13 @@ class ImageBuilderController extends Controller
 
             $machineType = $request->request->get('type-machine');
 
+            $packages = $request->request->get('packages');
+
             $family_name = $this->getDoctrine()
                 ->getRepository(Configuration::class)
                 ->getConfigurationByBaseOs($image_os);
 
-            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os, $machineType);
+            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os, $machineType, $packages);
         }
 
         if (substr_count($request->getHttpHost(), 'localhost') > 0) {
@@ -60,17 +62,21 @@ class ImageBuilderController extends Controller
         ]);
     }
 
-    public function generateScriptFile($image_os, $family_name, $machine_type) {
+    public function generateScriptFile($image_os, $family_name, $machine_type, $packages) {
         $result_infos = array();
         $user = $this->getUser();
         $mdp = $this->generatepwd();
         $id_server = $this->createNewImageForUser($image_os);
         $tmp_user_dir = $image_os.'-'. $user->getId() .'-'.$id_server;
         mkdir($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir, 0777);
-        $content = $this->getContentForScript($user, $family_name, $mdp);
-        $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
+        $content = $this->getContentForScript($user, $family_name, $mdp, $packages);
+        $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Script sh');
         fwrite($handle, $content);
         exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type .' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
+//        dump($output);
+//        dump($return_var);
+//
+//        exit;
         $output_string = explode(' ',$output[1]);
 
         foreach ($output_string as $vm_info) {
@@ -81,10 +87,6 @@ class ImageBuilderController extends Controller
 
         $this->sendMailForUser($result_infos, $user, $mdp);
 
-//        dump($output);
-//        dump($result_infos);
-//        dump($return_var);
-//        exit;
         return $result_infos;
     }
 
@@ -101,14 +103,19 @@ class ImageBuilderController extends Controller
         return $server->getIdServer();
     }
 
-    public function getContentForScript($user, $family_name, $mdp)
+    public function getContentForScript($user, $family_name, $mdp, $packages)
     {
+        $package_list = '';
+        foreach ($packages as $package) {
+            $package_list .= ' '.$package;
+        }
+
         if ($family_name != 'centos-cloud') {
             $content = '
                 #! /bin/bash
                 sudo su -
                 
-                apt-get update && apt-get install -y openssh-server sudo
+                apt-get update && apt-get install -y openssh-server sudo '.$package_list.'
                 
                 adduser --quiet --disabled-password --shell /bin/bash --home /home/'.$user->getUsername().' --gecos "'.$user->getUsername().'" '.$user->getUsername().'
                 echo "'.$user->getUsername().':'.$mdp.'" | chpasswd
@@ -123,7 +130,7 @@ class ImageBuilderController extends Controller
                 #! /bin/bash
                 sudo su -
                 
-                yum update && yum install -y openssh-server
+                yum update && yum install -y openssh-server '.$package_list.'
                 
                 adduser --shell /bin/bash --home /home/'.$user->getUsername().' '.$user->getUsername().'
                 echo "'.$user->getUsername().':'.$mdp.'" | chpasswd
@@ -162,10 +169,11 @@ class ImageBuilderController extends Controller
         $message = (new Swift_Message('Votre machine est disponible'))
             ->setFrom(['splintermastercloud@gmail.com' => 'Splinter'])
             ->setTo([$user->getEmail()])
-            ->setBody('Votre machine est disponible : 
-        IP serveur : '.$result_infos[4].'
-        Login : '.$user->getUsername().'
-        mot de passe : '.$mdp.'
+            ->setBody('
+            Votre machine est disponible : 
+            IP serveur : '.$result_infos[4].'
+            Login : '.$user->getUsername().'
+            mot de passe : '.$mdp.'
         ');
 
         $mailer->send($message);

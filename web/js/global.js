@@ -6,23 +6,22 @@ $(document).ready(function () {
             'interactive': true,
             'defaultText': 'add a tag',
             'removeWithBackspace': true,
-            'placeholderColor': '#666666'
+            'placeholderColor': '#666666',
+            'onAddTag':addTagFunction,
         });
     }
 });
 
 $('.history-container .vm-container button').on('click', function (e) {
-    console.log("coucou");
     var container = $(this).parent();
-    container.hide();
 
     var vmName = $(container).find('li.vm-name').text();
     var idServer = $(container).find('li.id-server').text();
 
-    ajaxRequest(vmName, idServer);
+    ajaxRequest(vmName, idServer, container);
 });
 
-const ajaxRequest = function(vmName, idServer){
+const ajaxRequest = function(vmName, idServer, container){
 
     var data = {};
     if(vmName){
@@ -40,10 +39,17 @@ const ajaxRequest = function(vmName, idServer){
         async: true,
         success: function () {
             console.log("success");
+            container.hide();
         },
         error: function (d) {
             console.log("error");
         }
     });
 };
+
+function addTagFunction() {
+    var tags_input = $('#tags').val();
+    console.log(tags_input);
+}
+
 
