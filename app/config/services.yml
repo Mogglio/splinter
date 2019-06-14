@@ -6,7 +6,6 @@ services:
         autoconfigure: true
         public: false
 
-
     AppBundle\:
         resource: '../../src/AppBundle/*'
 
@@ -16,8 +15,3 @@ services:
         resource: '../../src/AppBundle/Controller'
         public: true
         tags: ['controller.service_arguments']
-
-    email_service.class:
-        public: true
-        class: AppBundle\Utilities\EmailServiceClass
-        arguments: ['@mailer']
