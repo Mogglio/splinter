@@ -13,6 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class ImageBuilderController extends Controller
 {
@@ -51,7 +53,7 @@ class ImageBuilderController extends Controller
             $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os, $machineType, $packages, $zone);
         }
 
-        if (substr_count($request->getHttpHost(), 'localhost') > 0) {
+        if (substr_count($request->getHttpHost(), 'localhost') > 0 || substr_count($request->getHttpHost(), '127.0.0.1') > 0) {
             $base_url = 'localhost';
         } else {
             $base_url = $request->getHttpHost();
@@ -74,7 +76,15 @@ class ImageBuilderController extends Controller
         $content = $this->getContentForScript($user, $family_name, $mdp, $packages);
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Script sh');
         fwrite($handle, $content);
-        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type . ' --zone ' . $zone . ' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
+
+        $process = new Process('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '.$machine_type.' --zone '.$zone.' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh');
+        $process->run();
+        dump($process->getOutput());
+
+//        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type . ' --zone ' . $zone . ' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
+
+//        exit;
+
         $output_string = explode(' ',$output[1]);
 
         foreach ($output_string as $vm_info) {
