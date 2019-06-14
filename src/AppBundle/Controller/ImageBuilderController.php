@@ -40,11 +40,13 @@ class ImageBuilderController extends Controller
 
             $machineType = $request->request->get('type-machine');
 
+            $zone = $request->request->get('zone');
+
             $family_name = $this->getDoctrine()
                 ->getRepository(Configuration::class)
                 ->getConfigurationByBaseOs($image_os);
 
-            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os, $machineType);
+            $result_infos = $this->generateScriptFile($image_os, $family_name[0]->family_os, $machineType, $zone);
         }
 
         if (substr_count($request->getHttpHost(), 'localhost') > 0) {
@@ -60,7 +62,7 @@ class ImageBuilderController extends Controller
         ]);
     }
 
-    public function generateScriptFile($image_os, $family_name, $machine_type) {
+    public function generateScriptFile($image_os, $family_name, $machine_type, $zone) {
         $result_infos = array();
         $user = $this->getUser();
         $mdp = $this->generatepwd();
@@ -70,7 +72,7 @@ class ImageBuilderController extends Controller
         $content = $this->getContentForScript($user, $family_name, $mdp);
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Dockerfile');
         fwrite($handle, $content);
-        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type .' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
+        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type . ' --zone ' . $zone . ' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
         $output_string = explode(' ',$output[1]);
 
         foreach ($output_string as $vm_info) {
