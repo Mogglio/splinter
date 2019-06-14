@@ -10,11 +10,8 @@ use Swift_SmtpTransport;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 class ImageBuilderController extends Controller
 {
@@ -76,14 +73,7 @@ class ImageBuilderController extends Controller
         $content = $this->getContentForScript($user, $family_name, $mdp, $packages);
         $handle = fopen($this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', 'w') or die('Cannot open file: Script sh');
         fwrite($handle, $content);
-
-        $process = new Process('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '.$machine_type.' --zone '.$zone.' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh');
-        $process->run();
-        dump($process->getOutput());
-
-//        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type . ' --zone ' . $zone . ' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
-
-//        exit;
+        exec('gcloud compute instances create '.$user->getUsername().'-'.$tmp_user_dir.' --image-family '.$image_os.' --image-project '.$family_name.' --machine-type '. $machine_type . ' --zone ' . $zone . ' --metadata-from-file startup-script='.$this->get('kernel')->getProjectDir().'/web/scripts/'.$tmp_user_dir.'/script.sh', $output, $return_var);
 
         $output_string = explode(' ',$output[1]);
 
