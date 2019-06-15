@@ -106,6 +106,10 @@ class ImageBuilderController extends Controller
     {
         $package_list = '';
         foreach ($packages as $package) {
+            if ($package == "apache" && $family_name != "centos-cloud")
+                $package = "apache2";
+            else if ($package == "apache" && $family_name == "centos-cloud")
+                $package = "httpd";
             $package_list .= ' '.$package;
         }
 
