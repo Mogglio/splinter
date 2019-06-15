@@ -158,37 +158,23 @@ class ImageBuilderController extends Controller
 
     private function sendMailForUser($result_infos, $user, $mdp)
     {
-//        $mailer = new Swift_Mailer($transport);
-//
-//        $message = (new Swift_Message('Votre machine est disponible'))
-//            ->setFrom(['splintermastercloud@gmail.com' => 'Splinter'])
-//            ->setTo([$user->getEmail()])
-//            ->setBody('
-//            Votre machine est disponible :
-//            IP serveur : '.$result_infos[4].'
-//            Login : '.$user->getUsername().'
-//            mot de passe : '.$mdp.'
-//        ');
-//
-//        $mailer->send($message);
+        $transport = (new Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))
+            ->setUsername('splintermastercloud@gmail.com')
+            ->setPassword('pidgwlflxkwdbxpm');
 
-//        $transport = new Swift_SmtpTransport('smtp.gmail.com', 25);
-//
-//        $mailer = new Swift_Mailer($transport);
-//
-//        $message = (new \Swift_Message('Votre machine est disponible'))
-//            ->setFrom('splintermastercloud@gmail.com')
-//            ->setTo($user->getEmail())
-//            ->setBody('
-//            Votre machine est disponible :
-//            IP serveur : '.$result_infos[4].'
-//            Login : '.$user->getUsername().'
-//            mot de passe : '.$mdp.'
-//            ');
-//        ;
-//
-//        dump($mailer->send($message));
-//        exit;
+        $mailer = new Swift_Mailer($transport);
+
+        $message = (new Swift_Message('Votre machine est disponible'))
+            ->setFrom(['splintermastercloud@gmail.com' => 'Splinter'])
+            ->setTo([$user->getEmail()])
+            ->setBody('
+            Votre machine est disponible : 
+            IP serveur : '.$result_infos[4].'
+            Login : '.$user->getUsername().'
+            mot de passe : '.$mdp.'
+        ');
+
+        $mailer->send($message);
 
         return new Response();
     }
