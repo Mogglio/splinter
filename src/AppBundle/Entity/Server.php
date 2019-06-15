@@ -42,6 +42,13 @@ class Server
      */
     private $packages;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="zone", type="string", length=256, nullable=true)
+     */
+    private $zone;
+
 
 
     /**
@@ -124,5 +131,29 @@ class Server
     public function getIdServer()
     {
         return $this->idServer;
+    }
+
+    /**
+     * Set zone
+     *
+     * @param string $zone
+     *
+     * @return Server
+     */
+    public function setZone($zone)
+    {
+        $this->zone = $zone;
+
+        return $this;
+    }
+
+    /**
+     * Get zone
+     *
+     * @return string
+     */
+    public function getZone()
+    {
+        return $this->zone;
     }
 }

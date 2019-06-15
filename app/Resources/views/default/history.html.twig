@@ -8,8 +8,10 @@
                 <li class="nb-vm">{{ loop.index }}</li>
                 <li class="vm-name">{{ vm.name }}</li>
                 <li class="os-name">{{ vm.os }}</li>
+                <li class="zone">{{ vm.zone }}</li>
                 <button class="btn--danger">Delete</button>
                 <li class="id-server" style="display: none">{{ vm.idServer }}</li>
+                <li><span id="spinner_{{ vm.idServer }}" class="spinner"></span></li>
             </ul>
         {% endfor %}
     </div>

@@ -32,7 +32,8 @@ class HistoryController extends Controller
             $formatArray = array(
                 "name" => $user->getUsername() .'-'. $server->getBaseOs() .'-'. $user->getId() .'-'.$server->getIdServer(),
                 "os" => $server->getBaseOs(),
-                "idServer" => $server->getIdServer()
+                "idServer" => $server->getIdServer(),
+                "zone" => $server->getZone()
             );
 
             array_push($vmArray, $formatArray);
@@ -54,7 +55,9 @@ class HistoryController extends Controller
 
             $vmName = $request->request->get('vmName');
 
-            exec('gcloud compute instances delete --quiet '. $vmName);
+            $zone = $request->request->get('zone');
+
+            exec('gcloud compute instances delete --quiet '. $vmName .' --zone ' . $zone . ' 2>&1', $output, $return_var);
 
             $em = $this->getDoctrine()->getEntityManager();
             $entity = $em->getRepository(Server::class)->find($request->request->get('idServer'));

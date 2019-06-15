@@ -55,20 +55,23 @@ $(document).ready(function () {
 
 $('.history-container .vm-container button').on('click', function (e) {
     var container = $(this).parent();
+    var spinner_container = $(this);
 
     var vmName = $(container).find('li.vm-name').text();
     var idServer = $(container).find('li.id-server').text();
+    var zone = $(container).find('li.zone').text();
 
-    ajaxRequest(vmName, idServer, container);
+    ajaxRequest(vmName, idServer, zone, container);
 });
 
-const ajaxRequest = function(vmName, idServer, container){
+const ajaxRequest = function(vmName, idServer, zone, container){
 
     var data = {};
     if(vmName){
         data = {
             "vmName" : vmName,
-            "idServer" : idServer
+            "idServer" : idServer,
+            "zone" : zone
         }
     }
 
@@ -78,11 +81,14 @@ const ajaxRequest = function(vmName, idServer, container){
         dataType: "json",
         data: data,
         async: true,
+        beforeSend: function () {
+            $('#spinner_'+idServer).addClass('show');
+        },
         success: function () {
             console.log("success");
             container.hide();
         },
-        error: function (d) {
+        error: function () {
             console.log("error");
         }
     });
